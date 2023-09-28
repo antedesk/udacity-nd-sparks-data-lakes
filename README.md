@@ -36,12 +36,11 @@ Using AWS Glue, AWS S3, Python, and Spark, create or generate Python scripts to 
 
 Using The AWS glue data catalog, I created the following glue tables to query the data using AWS athena.
 
+**Glue Tables created (SQL scripts):**
+- [customer_landing.sql](./scripts/sql/customer_landing.sql)
+- [accelerometer_landing.sql](./scripts/sql/accelerometer_landing.sql)
 
-_**Glue Tables created (SQL DDL scripts):**_ 
-* [customer_landing.sql](./scripts/customer_landing.sql)
-* [accelerometer_landing.sql](./scripts/accelerometer_landing.sql)
-
-_**Screenshot of select statements from Athena showing the customer landing data and accelerometer landing data:**_ 
+**Screenshot of select statements from Athena showing the customer landing data and accelerometer landing data:**
 
 * `customer_landing` table:
 
@@ -59,19 +58,27 @@ _**Screenshot of select statements from Athena showing the customer landing data
 ### Trusted Zone
 
 _**Glue Job Scripts:**_ 
-* [customer_landing_to_trusted.py](./scripts/customer_landing_to_trusted.py) - it filters protected PII with Spark in Glue Jobs, i.e. customers who have agreed to share data with researchers;
-* [accelerometer_landing_to_trusted_zone.py](./scripts/accelerometer_landing_to_trusted_zone.py) - it filters for Accelerometer readings from customers who have agreed to share data with researchers;
-* [trainer_landing_to_trusted.py](./scripts/trainer_landing_to_trusted.py) - it populates `step_trainer_trusted` Glue Table and it filters customers who have accelerometer data and have agreed to share their data for research with Step Trainer readings.
-* [trainer_landing_to_trusted_v2.py](./scripts/trainer_landing_to_trusted_v2.py) - it's an alternative version based on S3 data for both step trainer readings and customer curated. This scripts populates `step_trainer/trusted` bucket with the step trainer data of customers who have accelerometer data and who have agreed to share their data for research with Step Trainer readings.
+
+| Glue Job                                                                                       | Description                                                                                                                                                                                                                                                                                                |
+|------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [customer_landing_to_trusted.py](./scripts/glue_jobs/customer_landing_to_trusted.py)                     | it filters protected PII with Spark in Glue Jobs, i.e. customers who have agreed to share data with researchers                                                                                                                                                                                            |
+| [accelerometer_landing_to_trusted_zone.py](./scripts/glue_jobs/accelerometer_landing_to_trusted_zone.py) | it filters for Accelerometer readings from customers who have agreed to share data with researchers                                                                                                                                                                                                        |
+| [trainer_landing_to_trusted.py](./scripts/glue_jobs/trainer_landing_to_trusted.py)                       | it populates `step_trainer_trusted` Glue Table and it filters customers who have accelerometer data and have agreed to share their data for research with Step Trainer readings                                                                                                                            |
+| [trainer_landing_to_trusted_v2.py](./scripts/glue_jobs/trainer_landing_to_trusted_v2.py)                 | it's an alternative version based on S3 data for both step trainer readings and customer curated. This scripts populates `step_trainer/trusted` bucket with the step trainer data of customers who have accelerometer data and who have agreed to share their data for research with Step Trainer readings |
 
 
 _**Use Athena to query Trusted Glue Tables**_ 
 
-*  `customer_trusted` table: 
+*  `customer_trusted` table - check no data where shareWithResearchAsOfDate is "blank" (i.e. `null`): 
 
     <img src="./images/customer_trusted.png">
 
+*  `customer_trusted` table - table data: 
+
     <img src="./images/customer_trusted_with_data.png">
+
+
+*  `customer_trusted` table - table data grouped by email: 
 
     <img src="./images/customer_trusted_groupby_email.png">
 
@@ -79,13 +86,9 @@ _**Use Athena to query Trusted Glue Tables**_
 ### Curated Zone
 
 _**Glue Job Scripts:**_ 
-* [customer_trusted_to_curated.py](./scripts/glue_jobs/customer_trusted_to_curated.py) - it filters customers with Accelerometer readings and who agreed to share their data;
-* [trainer_trusted_to_curated](./scripts/glue_jobs/trainer_trusted_to_curated.py) - it populates `machine_learning_curated` Glue Table that contains the Step Trainer readings and the associated accelerometer reading data for the same timestamp for customers who have agreed to share their data. Any PII information (i.e. the user field) is dropped.
-* [trainer_trusted_to_curated_v2](./scripts/glue_jobs/trainer_trusted_to_curated_v2.py) - it's an alternative version based on S3 data for both step trainer trusted readings and accelerometer trusted data. This script populates `machine_learning_curated` Glue Table that contains the Step Trainer readings and the associated accelerometer reading data for the same timestamp for customers who have agreed to share their data. Any PII information (i.e. the user field) is dropped.
 
-
-### Glue Tables on Athena
-
-_**Screenshot of all Glue Tables**_ 
-
-<img src="./images/glue_tables.png" width=30% height=50%>
+| Glue Job                                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                          |
+|---------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [customer_trusted_to_curated.py](./scripts/glue_jobs/customer_trusted_to_curated.py)  | it filters customers with Accelerometer readings and who agreed to share their data                                                                                                                                                                                                                                                                                                                  |
+| [trainer_trusted_to_curated](./scripts/glue_jobs/trainer_trusted_to_curated.py)       | it populates `machine_learning_curated` Glue Table that contains the Step Trainer readings and the associated accelerometer reading data for the same timestamp for customers who have agreed to share their data. Any PII information (i.e. the user field) is dropped                                                                                                                              |
+| [trainer_trusted_to_curated_v2](./scripts/glue_jobs/trainer_trusted_to_curated_v2.py) | it's an alternative version based on S3 data for both step trainer trusted readings and accelerometer trusted data. This script populates `machine_learning_curated` Glue Table that contains the Step Trainer readings and the associated accelerometer reading data for the same timestamp for customers who have agreed to share their data. Any PII information (i.e. the user field) is dropped |
